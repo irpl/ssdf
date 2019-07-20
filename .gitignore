@@ -85,5 +85,3 @@ sw.*
 
 # VSCode
 .vscode
-
-package-lock.json
