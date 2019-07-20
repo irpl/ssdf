@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "build": {
+    "src": "nuxt.config.js",
+    "use": "@nuxtjs/now-builder",
+    "config": {
+      "serverFiles": ["api/**"]
+    },
+    "env": {
+      "MONGO_URI": "mongodb+srv://ssdf:QdrUeV7CqMgACj57@cluster0-anv4t.mongodb.net/test?retryWrites=true&w=majority",
+      "USER": "admin",
+      "PASS": "admin"
+    }
+  },
+  "routes": [
+    { "src": "/_nuxt/.+", "headers": { "cache-control": "s-maxage=31536000" } },
+    { "src": "^/api/(.*)", "dest": "/api/index.js" }
+  ]
+}
