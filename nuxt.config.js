@@ -104,7 +104,7 @@ export default {
    ** Nuxt.js modules
    */
   modules: [],
-  serverMiddleware: ["~/api/index.js"],
+  serverMiddleware: [{ path: "/api", handler: "~/api/index.js" }],
 
   /*
    ** Build configuration
