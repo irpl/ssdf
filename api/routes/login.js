@@ -14,16 +14,11 @@ router.post("/", (req, res) => {
   let { user, pass } = req.body;
 
   if (user === process.env.USER && pass === process.env.PASS)
-    jwt.sign(
-      { user, pass },
-      "secretkey",
-      { expiresIn: "30s" },
-      (err, token) => {
-        res.json({
-          token
-        });
-      }
-    );
+    jwt.sign({ user, pass }, "secretkey", { expiresIn: "1h" }, (err, token) => {
+      res.json({
+        token
+      });
+    });
   else res.status(401).send("Unauthorized");
 });
 
