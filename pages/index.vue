@@ -111,7 +111,7 @@ export default {
         this.success = "inline";
 
         setTimeout(() => {
-          $("#exampleModal").modal("toggle");
+          $("#exampleModal").modal("hide");
           this.success = "none";
           this.selected = [];
           this.cakes.map(cake => {
