@@ -26,15 +26,15 @@
       <thead>
         <tr>
           <th>contact</th>
-          <!-- <th>tel</th> -->
+          <th>order cost</th>
           <th>cake</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(order, index) in orders" :key="index">
           <td>{{order.name}} ({{order.tel}})</td>
-          <!-- <td>{{order.tel}}</td> -->
-          <td>
+          <td>${{order.cake | getOrderCost }}</td>
+          <td class="cake-chip-td">
             <div class="cake-chip" v-for="(cake, jndex) in order.cake" :key="jndex">
               {{cake.name}}
               <span class="badge badge-dark">{{cake.quantity}}</span>
@@ -55,6 +55,15 @@ export default {
       date: "",
       loggedIn: false
     };
+  },
+  filters: {
+    getOrderCost: function(cake) {
+      // console.log(cake.map(cake => cake.price * cake.quantity));
+      return cake
+        .map(cake => cake.price * cake.quantity)
+        .reduce((a, c) => a + c);
+      // return "k";
+    }
   },
   computed: {
     totals: function() {
@@ -131,6 +140,9 @@ export default {
 td > .table {
   margin-bottom: 0;
 }
+.cake-chip-td {
+  padding-bottom: 0;
+}
 .per-person th:first-child {
   width: 30%;
 }
@@ -143,7 +155,7 @@ td > .table > tr > td {
   background-color: pink;
   display: inline-block;
   border-radius: 16px;
-  margin: 0px 0 0px 8px;
+  margin: 0px 0 8px 8px;
   font-size: 12px;
   /* color: white; */
 }
