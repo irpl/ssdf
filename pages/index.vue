@@ -61,7 +61,6 @@
                   type="tel"
                   placeholder="876 (optional)"
                   name="phone"
-                  required
                   v-model="tel"
                 />
               </div>
