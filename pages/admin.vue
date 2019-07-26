@@ -18,12 +18,6 @@
               <td>{{total.quantity}}</td>
             </tr>
           </tbody>
-          <tfoot>
-            <tr>
-              <td>grand total</td>
-              <td>${{orders | getTotalCost}}</td>
-            </tr>
-          </tfoot>
         </table>
       </div>
     </div>
@@ -48,6 +42,13 @@
           </td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td>grand total</td>
+          <td>${{orders | getTotalCost}}</td>
+          <td></td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </template>
