@@ -18,6 +18,12 @@
               <td>{{total.quantity}}</td>
             </tr>
           </tbody>
+          <tfoot>
+            <tr>
+              <td>grand total</td>
+              <td>${{orders | getTotalCost}}</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
@@ -57,12 +63,21 @@ export default {
     };
   },
   filters: {
-    getOrderCost: function(cake) {
+    getOrderCost: cake => {
       // console.log(cake.map(cake => cake.price * cake.quantity));
       return cake
         .map(cake => cake.price * cake.quantity)
         .reduce((a, c) => a + c);
       // return "k";
+    },
+    getTotalCost: orders => {
+      return orders
+        .map(order =>
+          order.cake
+            .map(cake => cake.price * cake.quantity)
+            .reduce((a, c) => a + c)
+        )
+        .reduce((a, c) => a + c);
     }
   },
   computed: {
@@ -104,7 +119,8 @@ export default {
         this.loggedIn = true;
         await this.$nextTick(function() {
           $("#tab").DataTable({
-            dom: 'lf<"datepicker">rtip'
+            // dom: 'lf<"datepicker">rtip'
+            // dom: 'lf<"datepicker">rtip'
           });
           // $("div.datepicker").append(
           //   "<label>Date:<input id='datetimepicker' class='form-control form-control-sm' type='text'></label>"
@@ -118,9 +134,9 @@ export default {
           // $("div.datepicker").value = new Date().toISOString().substr(0, 10);
           // .replace(/-/g, "/");
           // $("div.datepicker > label > input").datepicker({
-          $("#datetimepicker").datepicker({
-            defaultDate: "18/07/2019"
-          });
+          // $("#datetimepicker").datepicker({
+          //   defaultDate: "18/07/2019"
+          // });
         });
       }
     } catch (err) {
@@ -158,5 +174,8 @@ td > .table > tr > td {
   margin: 0px 0 8px 8px;
   font-size: 12px;
   /* color: white; */
+}
+tfoot {
+  font-weight: 700;
 }
 </style>
