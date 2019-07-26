@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/", (req, res) => {
   let { user, pass } = req.body;
 
-  if (user === process.env.USER && pass === process.env.PASS)
+  if (user === process.env.SSDF_USER && pass === process.env.SSDF_PASS)
     jwt.sign({ user, pass }, "secretkey", { expiresIn: "1h" }, (err, token) => {
       res.json({
         token

@@ -8,8 +8,8 @@
     },
     "env": {
       "MONGO_URI": "mongodb+srv://ssdf:QdrUeV7CqMgACj57@cluster0-anv4t.mongodb.net/test?retryWrites=true&w=majority",
-      "USER": "admin",
-      "PASS": "admin"
+      "SSDF_USER": "admin",
+      "SSDF_PASS": "admin"
     }
   },
   "routes": [
