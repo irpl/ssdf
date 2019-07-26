@@ -74,7 +74,8 @@ export default {
       {
         rel: "stylesheet",
         type: "text/css",
-        href: "https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"
+        href:
+          "https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"
       },
       {
         rel: "stylesheet",
