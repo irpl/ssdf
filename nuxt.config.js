@@ -57,7 +57,7 @@ export default {
       }
     ],
     link: [
-      { rel: "icon", type: "image/x-icon", href: "~/assets/img/cake-icon.png" },
+      { rel: "icon", type: "image/x-icon", href: "favicon.ico" },
       {
         rel: "stylesheet",
         href:
