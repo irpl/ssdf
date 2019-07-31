@@ -4,8 +4,14 @@ const router = express.Router();
 const Order = require("../models/Order");
 
 router.get("/", async (req, res) => {
-  let orderDem = await Order.find({});
-  res.json(orderDem);
+  const mon = req.query.mon;
+  const fri = req.query.fri;
+  try {
+    let orderDem = await Order.find({ date: { $gte: mon, $lte: fri } });
+    res.json(orderDem);
+  } catch (err) {
+    console.log(err.message);
+  }
 });
 
 router.post("/new", async (req, res) => {

@@ -55,6 +55,7 @@
 
 <script>
 import axios from "axios";
+import moment from "moment";
 export default {
   data() {
     return {
@@ -65,20 +66,38 @@ export default {
   },
   filters: {
     getOrderCost: cake => {
-      // console.log(cake.map(cake => cake.price * cake.quantity));
       return cake
         .map(cake => cake.price * cake.quantity)
         .reduce((a, c) => a + c);
-      // return "k";
     },
     getTotalCost: orders => {
-      return orders
-        .map(order =>
-          order.cake
-            .map(cake => cake.price * cake.quantity)
-            .reduce((a, c) => a + c)
-        )
-        .reduce((a, c) => a + c);
+      if (orders.length) {
+        return orders
+          .map(order =>
+            order.cake
+              .map(cake => cake.price * cake.quantity)
+              .reduce((a, c) => a + c)
+          )
+          .reduce((a, c) => a + c);
+      }
+      return "0";
+    }
+  },
+  methods: {
+    GetThisWeekStart() {
+      var today = moment();
+      var dasystoThisMonday = today.isoWeekday() - 1;
+      var thisMonday = today.subtract(dasystoThisMonday, "days");
+
+      return thisMonday.startOf("day").format("x");
+    },
+
+    GetThisWeekEnd() {
+      var today = moment();
+      var dasystoThisFriday = 5 - today.isoWeekday();
+      var thisFriday = today.add(dasystoThisFriday, "days");
+
+      return thisFriday.endOf("day").format("x");
     }
   },
   computed: {
@@ -115,29 +134,13 @@ export default {
         }
       );
       if (status === 200) {
-        let { data } = await axios.get("/api/order");
+        let { data } = await axios.get(
+          `api/order?mon=${this.GetThisWeekStart()}&fri=${this.GetThisWeekEnd()}`
+        );
         this.orders = await data;
         this.loggedIn = true;
         await this.$nextTick(function() {
-          $("#tab").DataTable({
-            // dom: 'lf<"datepicker">rtip'
-            // dom: 'lf<"datepicker">rtip'
-          });
-          // $("div.datepicker").append(
-          //   "<label>Date:<input id='datetimepicker' class='form-control form-control-sm' type='text'></label>"
-          // );
-          // $("div.datepicker").css({
-          //   display: "inline",
-          //   float: "right",
-          //   "text-align": "right",
-          //   padding: 0
-          // });
-          // $("div.datepicker").value = new Date().toISOString().substr(0, 10);
-          // .replace(/-/g, "/");
-          // $("div.datepicker > label > input").datepicker({
-          // $("#datetimepicker").datepicker({
-          //   defaultDate: "18/07/2019"
-          // });
+          $("#tab").DataTable({});
         });
       }
     } catch (err) {
@@ -172,7 +175,7 @@ td > .table > tr > td {
   background-color: pink;
   display: inline-block;
   border-radius: 16px;
-  margin: 0px 0 8px 8px;
+  margin: 0px 0 12px 8px;
   font-size: 12px;
   /* color: white; */
 }
