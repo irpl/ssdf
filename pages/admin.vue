@@ -67,9 +67,9 @@
 
       <div class="tab">
         <input type="radio" name="tabgroup" id="tab-3" />
-        <label for="tab-3">Settings</label>
+        <label for="tab-3">Menu</label>
         <div class="content">
-          <h3>Settings</h3>
+          <h3>Menu</h3>
           <div v-for="(cake,index) in cakes" :key="index" class="item">
             <span>{{cake.name}}</span>
             <input
@@ -78,10 +78,10 @@
               @change="e => updateAvail(e,cake._id)"
               v-model="cake.available"
             />
-            <!-- <div class="mod"> -->
-            <span>edit</span>
-            <span>delete</span>
-            <!-- </div> -->
+            <div class="mod">
+              <i class="fas fa-edit"></i>
+              <i class="fas fa-trash-alt"></i>
+            </div>
           </div>
         </div>
       </div>
@@ -281,7 +281,7 @@ tfoot {
 }
 
 .item {
-  max-width: 40vw;
+  // max-wid  th: 40vw;
   display: grid;
   grid-template-columns: 300px max-content max-content max-content;
   grid-gap: 10px;
@@ -297,5 +297,22 @@ tfoot {
   &:focus {
     outline: none;
   }
+}
+
+.fa-trash-alt:hover {
+  color: rgb(255, 122, 122);
+}
+.fa-edit:hover {
+  color: rgb(122, 122, 255);
+}
+.item > .mod {
+  cursor: pointer;
+  opacity: 0.1;
+}
+.mod {
+  margin-left: 20px;
+}
+.item:hover > .mod {
+  opacity: 1;
 }
 </style>
