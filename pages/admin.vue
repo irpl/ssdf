@@ -2,54 +2,90 @@
   <div class="container" v-if="loggedIn">
     <h1>Admin</h1>
 
-    <h3>break down</h3>
-    <div class="row">
-      <div class="col-md-6">
-        <table class="table table-sm table-bordered">
-          <thead>
-            <tr>
-              <th>cake</th>
-              <th>quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(total, index) in totals" :key="index">
-              <td>{{total.name}}</td>
-              <td>{{total.quantity}}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="tabs">
+      <div class="tab">
+        <input type="radio" name="tabgroup" id="tab-1" checked />
+        <label for="tab-1">Per Person</label>
+        <div class="content">
+          <h3>Per Person</h3>
+          <table id="tab" class="per-person table table-bordered">
+            <thead>
+              <tr>
+                <th>contact</th>
+                <th>order cost</th>
+                <th>cake</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(order, index) in orders" :key="index">
+                <td>{{order.name}} ({{order.tel}})</td>
+                <td>${{order.cake | getOrderCost }}</td>
+                <td class="cake-chip-td">
+                  <div class="cake-chip" v-for="(cake, jndex) in order.cake" :key="jndex">
+                    {{cake.name}}
+                    <span class="badge badge-dark">{{cake.quantity}}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>grand total</td>
+                <td>${{orders | getTotalCost}}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab">
+        <input type="radio" name="tabgroup" id="tab-2" />
+        <label for="tab-2">Breakdown</label>
+        <div class="content">
+          <h3>Break Down</h3>
+          <div class="row">
+            <div class="col-md-6">
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr>
+                    <th>cake</th>
+                    <th>quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(total, index) in totals" :key="index">
+                    <td>{{total.name}}</td>
+                    <td>{{total.quantity}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab">
+        <input type="radio" name="tabgroup" id="tab-3" />
+        <label for="tab-3">Settings</label>
+        <div class="content">
+          <h3>Settings</h3>
+          <div v-for="(cake,index) in cakes" :key="index" class="item">
+            <span>{{cake.name}}</span>
+            <input
+              class="sitch"
+              type="checkbox"
+              @change="e => updateAvail(e,cake._id)"
+              v-model="cake.available"
+            />
+            <!-- <div class="mod"> -->
+            <span>edit</span>
+            <span>delete</span>
+            <!-- </div> -->
+          </div>
+        </div>
       </div>
     </div>
-    <h3>per person</h3>
-    <table id="tab" class="per-person table table-bordered">
-      <thead>
-        <tr>
-          <th>contact</th>
-          <th>order cost</th>
-          <th>cake</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(order, index) in orders" :key="index">
-          <td>{{order.name}} ({{order.tel}})</td>
-          <td>${{order.cake | getOrderCost }}</td>
-          <td class="cake-chip-td">
-            <div class="cake-chip" v-for="(cake, jndex) in order.cake" :key="jndex">
-              {{cake.name}}
-              <span class="badge badge-dark">{{cake.quantity}}</span>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td>grand total</td>
-          <td>${{orders | getTotalCost}}</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
   </div>
 </template>
 
@@ -60,6 +96,7 @@ export default {
   data() {
     return {
       orders: [],
+      cakes: [],
       date: "",
       loggedIn: false
     };
@@ -98,6 +135,13 @@ export default {
       var thisFriday = today.add(dasystoThisFriday, "days");
 
       return thisFriday.endOf("day").format("x");
+    },
+    async updateAvail(e, id) {
+      let a = e.target.checked;
+      let { data } = await axios.patch(`api/cake/available/${id}`, {
+        available: e.target.checked
+      });
+      console.log(a);
     }
   },
   computed: {
@@ -134,10 +178,14 @@ export default {
         }
       );
       if (status === 200) {
-        let { data } = await axios.get(
-          `api/order?mon=${this.GetThisWeekStart()}&fri=${this.GetThisWeekEnd()}`
-        );
-        this.orders = await data;
+        let res = await axios.all([
+          axios.get(
+            `api/order?mon=${this.GetThisWeekStart()}&fri=${this.GetThisWeekEnd()}`
+          ),
+          axios.get("/api/cake")
+        ]);
+        this.orders = await res[0].data;
+        this.cakes = await res[1].data;
         this.loggedIn = true;
         await this.$nextTick(function() {
           $("#tab").DataTable({});
@@ -150,7 +198,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
   display: block;
 }
@@ -181,5 +229,73 @@ td > .table > tr > td {
 }
 tfoot {
   font-weight: 700;
+}
+.tabs {
+  position: relative;
+  // set height to be even for all tab groups
+  height: calc(100vh - 200px);
+  display: block;
+  margin: 1em auto 0;
+  width: 100%;
+}
+
+.tab {
+  float: left;
+
+  label {
+    cursor: pointer;
+    font-size: 1.2em;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    color: #333;
+  }
+
+  [type="radio"] {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+
+    &:checked ~ label {
+      background: rgb(83, 83, 83);
+      color: white;
+    }
+
+    &:checked ~ label ~ .content {
+      z-index: 1;
+      h3 {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
+
+.content {
+  background: white;
+  border-radius: 0 5px 5px;
+  position: absolute;
+  width: 100%;
+  top: 3.2em;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.item {
+  max-width: 40vw;
+  display: grid;
+  grid-template-columns: 300px max-content max-content max-content;
+  grid-gap: 10px;
+
+  margin-bottom: 2rem;
+  align-items: center;
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+.switch {
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
 }
 </style>
