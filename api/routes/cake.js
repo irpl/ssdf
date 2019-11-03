@@ -49,4 +49,16 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    let cake = await Cake.findByIdAndDelete(req.params.id);
+    if (cake) {
+      res.json(cake);
+    }
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(400);
+  }
+});
+
 module.exports = router;

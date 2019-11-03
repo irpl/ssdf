@@ -72,6 +72,7 @@
           <h3>Menu</h3>
           <div v-for="(cake,index) in cakes" :key="index" class="item">
             <span>{{cake.name}}</span>
+            <span>${{cake.price}}</span>
             <input
               class="sitch"
               type="checkbox"
@@ -80,9 +81,21 @@
             />
             <div class="mod">
               <i class="fas fa-edit"></i>
-              <i class="fas fa-trash-alt"></i>
+              <i class="fas fa-trash-alt" @click="deleteCake(cake._id)"></i>
             </div>
           </div>
+          <form @submit.prevent="addCake">
+            <div class="item">
+              <input type="text" placeholder="Name" v-model="newCake.name" />
+              <input type="number" placeholder="Cost" v-model="newCake.price" />
+              <input type="text" placeholder="Picture" v-model="newCake.url" />
+              <input
+                type="submit"
+                style="position: absolute; left: -9999px; width: 1px; height: 1px;"
+                tabindex="-1"
+              />
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -97,6 +110,7 @@ export default {
     return {
       orders: [],
       cakes: [],
+      newCake: {},
       date: "",
       loggedIn: false
     };
@@ -137,11 +151,32 @@ export default {
       return thisFriday.endOf("day").format("x");
     },
     async updateAvail(e, id) {
-      let a = e.target.checked;
       let { data } = await axios.patch(`api/cake/available/${id}`, {
         available: e.target.checked
       });
-      console.log(a);
+    },
+    async addCake() {
+      try {
+        let { status } = await axios.post("/api/cake", this.newCake);
+        if (status === 200) {
+          let { data } = await axios.get("/api/cake");
+          this.cakes = data;
+          this.newCake = {};
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    async deleteCake(id) {
+      try {
+        let { status } = await axios.delete(`/api/cake/${id}`);
+        if (status === 200) {
+          let { data } = await axios.get("/api/cake");
+          this.cakes = data;
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   },
   computed: {
@@ -283,7 +318,7 @@ tfoot {
 .item {
   // max-wid  th: 40vw;
   display: grid;
-  grid-template-columns: 300px max-content max-content max-content;
+  grid-template-columns: 250px 100px max-content max-content max-content;
   grid-gap: 10px;
 
   margin-bottom: 2rem;
@@ -314,5 +349,22 @@ tfoot {
 }
 .item:hover > .mod {
   opacity: 1;
+}
+// .add-item {
+//   cursor: pointer;
+//   opacity: 0.3;
+//   &:hover {
+//     opacity: 1;
+//   }
+//   label {
+//     font-size: 1rem;
+//     padding: 0;
+//     input {
+//       display: none;
+//     }
+//   }
+// }
+form > .item {
+  margin-top: 40px;
 }
 </style>
