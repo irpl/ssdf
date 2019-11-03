@@ -17,9 +17,8 @@
           class="btn btn-lg btn-danger cake-submit"
           value="Next"
           data-target="#exampleModal"
-          :disabled="selected.length < 1"
           @click="next"
-          v-if="cakes.length"
+          v-if="selected.length"
         />
         <!-- <span :style="{display: choose}">[Choose one]</span> -->
       </div>
@@ -134,7 +133,7 @@ export default {
     }
   },
   async created() {
-    let { data } = await axios.get("/api/cake");
+    let { data } = await axios.get("/api/cake/available");
     await data.map(c => {
       c.selected = false;
       c.quantity = 1;

@@ -3,7 +3,7 @@ import pkg from "./package";
 export default {
   mode: "universal",
   server: {
-  	port: 3030,
+    port: 3030,
     host: "0.0.0.0"
   },
 
@@ -55,6 +55,10 @@ export default {
         type: "text/javascript",
         src:
           "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"
+      },
+      {
+        src: "https://kit.fontawesome.com/f0f1d79673.js",
+        crossorigin: "anonymous"
       }
     ],
     link: [
