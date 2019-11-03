@@ -5,9 +5,9 @@
     <div class="tabs">
       <div class="tab">
         <input type="radio" name="tabgroup" id="tab-1" checked />
-        <label for="tab-1">Per Person</label>
+        <label for="tab-1">Orders</label>
         <div class="content">
-          <h3>Per Person</h3>
+          <h3>Orders</h3>
           <table id="tab" class="per-person table table-bordered">
             <thead>
               <tr>
@@ -76,7 +76,7 @@
             <input
               class="sitch"
               type="checkbox"
-              @change="e => updateAvail(e,cake._id)"
+              @change="e => updateAvail(e,cake)"
               v-model="cake.available"
             />
             <div class="mod">
@@ -150,8 +150,9 @@ export default {
 
       return thisFriday.endOf("day").format("x");
     },
-    async updateAvail(e, id) {
-      let { data } = await axios.patch(`api/cake/available/${id}`, {
+    async updateAvail(e, cake) {
+      let { data } = await axios.patch(`api/cake/${cake._id}`, {
+        ...cake,
         available: e.target.checked
       });
     },

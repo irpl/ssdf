@@ -13,13 +13,16 @@ router.get("/available", async (req, res) => {
   res.json(cakeDem);
 });
 
-router.patch("/available/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   let cake = await Cake.findById(req.params.id);
   try {
+    cake.name = await req.body.name;
+    cake.price = await req.body.price;
     cake.available = await req.body.available;
+    cake.url = await req.body.url;
     await cake.save();
     res.json({
-      data: { _id: cake._id, available: cake.available },
+      data: cake,
       message: "success"
     });
   } catch (err) {
