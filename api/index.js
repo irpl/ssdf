@@ -8,7 +8,10 @@ app.use(cors());
 
 // Connect to database
 mongoose
-  .connect(process.env.SSDF_MONGO_URI, { useNewUrlParser: true })
+  .connect(process.env.SSDF_MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
   .then(() => console.log("MongoDB Connected..."))
   .catch(err => {
     console.error(err.message);
