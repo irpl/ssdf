@@ -88,3 +88,5 @@ sw.*
 
 static/img/*.jpg
 static/img/*.png
+
+ecosystem.config.js

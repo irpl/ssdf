@@ -88,10 +88,6 @@ export default {
   margin: 15px;
   font-family: 'Karla';
 }
-p {
-  /* font-family: Karla; */
-  /* font-family: 'Libre Baskerville', serif; */
-}
 p.price {
   font-size: 44px;
   font-weight: 600;
