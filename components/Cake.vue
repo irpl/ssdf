@@ -1,6 +1,6 @@
 <template>
-  <div class="cake-card" :style="{backgroundImage: `url(${cake.url})`}">
-    <div class="cake-label">
+  <div class="cake-card" :style="{backgroundColor: cake.color.rgba}">
+    <div class="cake-label" :style="{backgroundImage: `url(/img/${cake.url})`}">
       <p class="name">{{cake.name}}</p>
       <p class="price">${{cake.price}}</p>
       <div class="cake-quantity" :class="{'cake-quantity-show': cake.selected}">
@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <!-- <img class="cake-card-img" :src="cake.url" alt /> -->
+    <div class="cake-description" v-html="cake.description"></div>
   </div>
 </template>
 
@@ -24,6 +24,14 @@ export default {
       cake.quantity =
         cake.quantity === 1 && inc == -1 ? cake.quantity : cake.quantity + inc;
     }
+  },filters: {
+    decodeHTML(str) {
+    // Temp div to render html internally
+    let decode = $('<div />').html(str);
+
+    // Add rendered html to DOM
+    return $(decode);
+    }
   }
 };
 </script>
@@ -31,26 +39,25 @@ export default {
 <style>
 .cake-card {
   min-width: 350px;
-  min-height: 200px;
+  min-height: 400px;
   display: inline-block;
   /* margin: 20px; */
   overflow: hidden;
   position: relative;
   padding: 0;
   border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.3);
-  background-blend-mode: multiply;
-  background-size: cover;
-  background-position-y: center;
+  box-shadow: 0px 8px 15px 0px rgb(154, 122, 110);
+  background-color: #eee;
+  
 
   /* padding: 20px; */
 }
 .cake-card:hover {
   box-shadow: 0px 16px 20px 0px rgb(154, 122, 110);
-  transform: perspective(40em) rotateX(-10deg);
-  transform-origin: center bottom;
+  /* transform: perspective(40em) rotateX(-10deg); */
+  /* transform-origin: center bottom; */
   transition: transform 0.1s ease-in, box-shadow 0.2s ease-in;
-  border: 4px solid white;
+  /* border: 4px solid white; */
   cursor: pointer;
 }
 .cake-card.selected {
@@ -63,13 +70,27 @@ export default {
   /* transition: box-shadow 0.2s ease, border 0.2s ease; */
 }
 .cake-label {
+  /* background-image: url(~assets/img/cheese.jpg); */
+  width: 100%;
+  height: 200px;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
+  
+  background-color: rgba(0, 0, 0, 0.3);
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position-y: center;
+  font-family: 'Libre Baskerville', serif;
+}
+.cake-description {
+  margin: 15px;
+  font-family: 'Karla';
 }
 p {
-  font-family: Karla;
+  /* font-family: Karla; */
+  /* font-family: 'Libre Baskerville', serif; */
 }
 p.price {
   font-size: 44px;

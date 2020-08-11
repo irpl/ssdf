@@ -70,30 +70,122 @@
         <label for="tab-3">Menu</label>
         <div class="content">
           <h3>Menu</h3>
-          <div v-for="(cake,index) in cakes" :key="index" class="item">
-            <span>{{cake.name}}</span>
-            <span>${{cake.price}}</span>
-            <input
-              class="sitch"
-              type="checkbox"
-              @change="e => updateAvail(e,cake)"
-              v-model="cake.available"
-            />
-            <div class="mod">
-              <i class="fas fa-edit"></i>
-              <i class="fas fa-trash-alt" @click="deleteCake(cake._id)"></i>
+          <div v-for="(cake,index) in cakes" :key="index" class="item-container">
+            <div class="item">
+              <span>{{cake.name}}</span>
+              <span>${{cake.price}}</span>
+              <input
+                class="sitch"
+                type="checkbox"
+                @change="e => updateAvail(e,cake)"
+                v-model="cake.available"
+              />
+              <div class="mod">
+                <i class="fas fa-edit" @click="e => edit(e, cake)"></i>
+                <i class="fas fa-trash-alt" @click="() => deleteCake(cake._id)"></i>
+              </div>
             </div>
+            <!-- <div v-if="cake.variants.length>0">
+              <div v-for="(v, index) in cake.variants" :key="index" class="item sub-item">
+                <span>{{v.name}}</span>
+                <span>${{v.price}}</span>
+                <input
+                  class="sitch"
+                  type="checkbox"
+                  @change="e => updateAvail(e,cake)"
+                  v-model="v.available"
+                />
+                <div class="mod">
+                  <i class="fas fa-edit" @click="e => console.log('clicked')"></i>
+                  <i class="fas fa-trash-alt" @click="() => deleteCake(cake._id)"></i>
+                </div>
+              </div>
+            </div> -->
           </div>
           <form @submit.prevent="addCake">
             <div class="item">
               <input type="text" placeholder="Name" v-model="newCake.name" />
               <input type="number" placeholder="Cost" v-model="newCake.price" />
-              <input type="text" placeholder="Picture" v-model="newCake.url" />
+              <!-- <input type="text" placeholder="Picture" v-model="newCake.url" /> -->
+              <input type="file" @change="imageSelect" accept="image/jpeg,image/jpg,image/png">
               <input
                 type="submit"
                 style="position: absolute; left: -9999px; width: 1px; height: 1px;"
                 tabindex="-1"
               />
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit cake</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form @submit.prevent="updateCake">
+            <div class="modal-body">
+              <div class="form-group">
+                Name:
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="Name"
+                  required
+                  name="name"
+                  v-model="editCake.name"
+                />
+                 Price:
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="0.00"
+                  name="price"
+                  v-model="editCake.price"
+                />
+                URL:
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="http://..."
+                  name="url"
+                  v-model="editCake.url"
+                />
+                <div>Description:</div> 
+                <editor
+                  v-model="editCake.description"
+                  api-key="80xo7uxsrkxe54w9op08802by3wxce1kcwrfbboo2pj35ya0"
+                  :init="{
+                    height: 300,
+                    menubar: false,
+                    plugins: [
+                      'advlist autolink lists link image charmap print preview anchor',
+                      'searchreplace visualblocks code fullscreen',
+                      'insertdatetime media table paste code help wordcount'
+                    ],
+                    toolbar:
+                      'undo redo | formatselect | bold italic backcolor | \
+                      alignleft aligncenter alignright alignjustify | \
+                      bullist numlist outdent indent | removeformat | help'
+                  }"
+                />
+              </div>                
+            </div>
+            <div class="modal-footer">
+              <!-- <span class="order-success" :style="{display: success}">Got your order ✔️</span> -->
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-danger">Update</button>
             </div>
           </form>
         </div>
@@ -105,14 +197,21 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import Editor from '@tinymce/tinymce-vue'
+import FastAverageColor from 'fast-average-color';
+
 export default {
+  components: {
+     'editor': Editor,
+   },
   data() {
     return {
       orders: [],
       cakes: [],
       newCake: {},
+      editCake: {},
       date: "",
-      loggedIn: false
+      loggedIn: false,
     };
   },
   filters: {
@@ -135,6 +234,32 @@ export default {
     }
   },
   methods: {
+    imageSelect: function(e) {
+      this.newCake.image = e.target.files[0];
+      const fac = new FastAverageColor()
+      var img = new Image();
+      img.src = URL.createObjectURL(e.target.files[0]);
+
+      fac.getColorAsync(img, { algorithm: 'simple', mode: 'precision' })
+      .then(color => {
+          this.newCake.color = color;
+          // console.log(color)
+      })
+      .catch(e => {
+          console.error(e);
+      });
+    },
+    edit: function(e, cake) {
+      this.editCake = cake;
+      $("#exampleModal").modal("toggle");
+    },
+    async updateCake() {
+      let { data } = await axios.patch(`api/cake/${this.editCake._id}`, {
+        ...this.editCake
+      });
+      this.editCake = {};
+      $("#exampleModal").modal("hide");
+    },
     GetThisWeekStart() {
       var today = moment();
       var dasystoThisMonday = today.isoWeekday() - 1;
@@ -157,8 +282,16 @@ export default {
       });
     },
     async addCake() {
+      var form_data = new FormData();
+      // for ( var key in this.newCake ) {
+      //   form_data.append(key, this.newCake[key]);
+      // }   
+      form_data.append('name', this.newCake.name);
+      form_data.append('price', this.newCake.price);
+      form_data.append('image', this.newCake.image);
+      form_data.append('color', JSON.stringify(this.newCake.color))
       try {
-        let { status } = await axios.post("/api/cake", this.newCake);
+        let { status } = await axios.post("/api/cake", form_data);
         if (status === 200) {
           let { data } = await axios.get("/api/cake");
           this.cakes = data;
@@ -170,11 +303,15 @@ export default {
     },
     async deleteCake(id) {
       try {
-        let { status } = await axios.delete(`/api/cake/${id}`);
-        if (status === 200) {
-          let { data } = await axios.get("/api/cake");
-          this.cakes = data;
+        // let conf = 
+        if (confirm("Sure?")){
+          let { status } = await axios.delete(`/api/cake/${id}`);
+          if (status === 200) {
+            let { data } = await axios.get("/api/cake");
+            this.cakes = data;
+          }
         }
+        
       } catch (err) {
         console.error(err);
       }
@@ -185,12 +322,18 @@ export default {
       let names = [
         ...new Set(
           [].concat
-            .apply([], this.orders.map(o => o.cake))
+            .apply(
+              [],
+              this.orders.map(o => o.cake)
+            )
             .map(({ name }) => name)
         )
       ];
 
-      let orders = [].concat.apply([], this.orders.map(o => o.cake));
+      let orders = [].concat.apply(
+        [],
+        this.orders.map(o => o.cake)
+      );
       return names.map(name => ({
         name: name,
         quantity: orders
@@ -297,6 +440,7 @@ tfoot {
 
     &:checked ~ label ~ .content {
       z-index: 1;
+      display: block;
       h3 {
         margin-top: 1rem;
         margin-bottom: 1rem;
@@ -306,7 +450,8 @@ tfoot {
 }
 
 .content {
-  background: white;
+  display: none;
+  // background: white;
   border-radius: 0 5px 5px;
   position: absolute;
   width: 100%;
@@ -322,11 +467,21 @@ tfoot {
   grid-template-columns: 250px 100px max-content max-content max-content;
   grid-gap: 10px;
 
-  margin-bottom: 2rem;
+  margin-top: 2rem;
   align-items: center;
   &:last-of-type {
     margin-bottom: 0;
   }
+}
+.item-container {
+  margin-bottom: 2rem;
+  &:first-of-type {
+    margin-bottom: 0;
+  }
+}
+.sub-item {
+  margin-left: 20px;
+  margin-top: 0.5rem;
 }
 .switch {
   cursor: pointer;

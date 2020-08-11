@@ -1,6 +1,9 @@
 <template>
   <div class>
-    <h1>SWEET & SAVOURY DELIGHTS FRIDAY!!!</h1>
+    <div class="logo">
+      <!-- <img src="@/assets/img/logo.png" alt="logo" /> -->
+      <h1>BUY MY CAKES!</h1>
+    </div>
     <main class>
       <Cake
         v-for="(cake, index) in cakes"
@@ -58,7 +61,8 @@
                 <input
                   class="form-control"
                   type="tel"
-                  placeholder="876 (optional)"
+                  placeholder="Phone"
+                  required
                   name="phone"
                   v-model="tel"
                 />
@@ -133,12 +137,17 @@ export default {
     }
   },
   async created() {
-    let { data } = await axios.get("/api/cake/available");
-    await data.map(c => {
-      c.selected = false;
-      c.quantity = 1;
-    });
-    this.cakes = await data;
+    // console.log($nuxt.$route.path);
+    try {
+      let { data } = await axios.get("/api/cake/available");
+      await data.map(c => {
+        c.selected = false;
+        c.quantity = 1;
+      });
+      this.cakes = await data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 };
 </script>
@@ -146,6 +155,7 @@ export default {
 <style>
 body {
   font-size: 16px;
+  /* background: #eee; */
   background: #f5c0ad;
   -webkit-user-select: none; /* Chrome all / Safari all */
   -moz-user-select: none; /* Firefox all */
@@ -153,9 +163,10 @@ body {
   user-select: none;
   padding: 20px;
 }
+.logo,
 h1 {
   font-family: "Abril Fatface";
-  white-space: wrap;
+  /* white-space: wrap; */
   font-size: 4vw;
   line-height: 1.2;
   padding: 0 20px;
@@ -175,6 +186,12 @@ main {
   grid-gap: 20px;
 }
 @media only screen and (max-width: 720px) {
+  .logo {
+    /* display: flex;
+    justify-content: center; */
+    /* text-align: center; */
+    margin-bottom: 2rem;
+  }
   main {
     grid-template-columns: 1fr;
     width: unset;

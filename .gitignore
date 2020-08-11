@@ -85,3 +85,6 @@ sw.*
 
 # VSCode
 .vscode
+
+static/img/*.jpg
+static/img/*.png

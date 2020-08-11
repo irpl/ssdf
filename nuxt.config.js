@@ -1,9 +1,10 @@
 import pkg from "./package";
+require('dotenv').config()
 
 export default {
   mode: "universal",
   server: {
-    port: 3030,
+    port: process.env.SSDF_PORT || 3030,
     host: "0.0.0.0"
   },
 
@@ -74,6 +75,11 @@ export default {
       {
         href:
           "https://fonts.googleapis.com/css?family=Abril+Fatface|Karla:400,700&display=swap",
+        rel: "stylesheet"
+      },
+      {
+        href:
+        "https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap",
         rel: "stylesheet"
       },
       {
