@@ -5,11 +5,6 @@
     "use": "@nuxtjs/now-builder",
     "config": {
       "serverFiles": ["api/**"]
-    },
-    "env": {
-      "MONGO_URI": "mongodb+srv://ssdf:QdrUeV7CqMgACj57@cluster0-anv4t.mongodb.net/test?retryWrites=true&w=majority",
-      "SSDF_USER": "admin",
-      "SSDF_PASS": "admin"
     }
   },
   "routes": [
