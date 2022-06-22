@@ -7,7 +7,7 @@
         @click.native="select(cake)"
         :key="index"
         :cake="cake"
-        :class="{ selected: cake.selected}"
+        :class="{ selected: cake.selected }"
       />
     </main>
     <div class="row">
@@ -35,7 +35,12 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Confirm order</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -43,7 +48,9 @@
             <div class="modal-body">
               <span>You order:</span>
               <ul>
-                <li v-for="(s, index) in selected" :key="index">{{s.quantity}}x - {{s.name}}</li>
+                <li v-for="(s, index) in selected" :key="index">
+                  {{ s.quantity }}x - {{ s.name }}
+                </li>
               </ul>
               <div class="form-group">
                 Contact Info:
@@ -65,8 +72,16 @@
               </div>
             </div>
             <div class="modal-footer">
-              <span class="order-success" :style="{display: success}">Got your order ✔️</span>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <span class="order-success" :style="{ display: success }"
+                >Got your order ✔️</span
+              >
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
               <button type="submit" class="btn btn-danger">Order</button>
             </div>
           </form>
@@ -82,7 +97,7 @@ import axios from "axios";
 
 export default {
   components: {
-    Cake
+    Cake,
   },
   data() {
     return {
@@ -90,18 +105,18 @@ export default {
       selected: [],
       name: "",
       tel: "",
-      success: "none"
+      success: "none",
     };
   },
   methods: {
-    next: function() {
+    next: function () {
       if (this.selected.length) $("#exampleModal").modal("toggle");
     },
-    order: async function() {
+    order: async function () {
       let order = {
         name: this.name,
         tel: this.tel,
-        cake: this.selected
+        cake: this.selected,
       };
       let { data, status } = await axios.post("/api/order/new", order);
 
@@ -112,14 +127,14 @@ export default {
           $("#exampleModal").modal("hide");
           this.success = "none";
           this.selected = [];
-          this.cakes.map(cake => {
+          this.cakes.map((cake) => {
             cake.selected = false;
             cake.quantity = 1;
           });
         }, 3000);
       }
     },
-    select: function(cake) {
+    select: function (cake) {
       if (!cake.selected) {
         this.selected.push(cake);
         cake.selected = !cake.selected;
@@ -130,16 +145,18 @@ export default {
           cake.selected = !cake.selected;
         }
       }
-    }
+    },
   },
   async created() {
-    let { data } = await axios.get("/api/cake/available");
-    await data.map(c => {
+    let { data } = await axios.get(
+      "https://ssdf-irpl.vercel.app/api/cake/available"
+    );
+    await data.map((c) => {
       c.selected = false;
       c.quantity = 1;
     });
     this.cakes = await data;
-  }
+  },
 };
 </script>
 
